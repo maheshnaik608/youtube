@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Clone</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            color: #181818;
+        }
+
+        header {
+            background: white;
+            padding: 14px 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            position: sticky;
+            top: 0;
+            border-bottom: 1px solid #ddd;
+            z-index: 10;
+        }
+
+        .logo {
+            color: #ff0000;
+            font-size: 25px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        form { display: flex; flex: 1; max-width: 550px; }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 22px 0 0 22px;
+        }
+
+        button {
+            padding: 10px 18px;
+            border: 1px solid #ccc;
+            border-radius: 0 22px 22px 0;
+            cursor: pointer;
+        }
+
+        .layout { display: flex; }
+
+        aside {
+            width: 180px;
+            padding: 20px 12px;
+            background: white;
+            min-height: 100vh;
+        }
+
+        aside a {
+            display: block;
+            padding: 13px;
+            color: #222;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        aside a:hover { background: #eee; }
+
+        main { flex: 1; padding: 24px; min-width: 0; }
+
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .categories a {
+            padding: 9px 16px;
+            border-radius: 8px;
+            background: #eee;
+            color: #222;
+            text-decoration: none;
+        }
+
+        .categories a.active,
+        .categories a:hover {
+            background: #222;
+            color: white;
+        }
+
+        .videos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 24px 18px;
+        }
+
+        .video { text-decoration: none; color: inherit; }
+
+        .thumbnail {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            border-radius: 12px;
+            background: #ddd;
+        }
+
+        h3 { font-size: 16px; line-height: 1.4; }
+
+        .meta { color: #666; font-size: 13px; }
+
+        .player {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border: 0;
+            border-radius: 12px;
+            background: black;
+        }
+
+        @media (max-width: 600px) {
+            aside { width: 70px; padding: 10px 4px; }
+            aside a { font-size: 11px; padding: 12px 4px; }
+            main { padding: 12px; }
+            header { padding: 12px; gap: 10px; }
+            .logo { font-size: 18px; }
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <a class="logo" href="/">▶ YouTube</a>
+
+    <form action="/" method="get">
+        <input type="text" name="search"
+               placeholder="Search videos..."
+               value="{{ search }}">
+        <button type="submit">Search</button>
+    </form>
+</header>
+
+<div class="layout">
+    <aside>
+        <a href="/">🏠 Home</a>
+        <a href="/?category=Technology">💻 Technology</a>
+        <a href="/?category=Education">📚 Education</a>
+        <a href="/?category=Movies">🎬 Movies</a>
+        <a href="/?category=Nature">🌳 Nature</a>
+    </aside>
+
+    <main>
+        {% if selected_video %}
+            <iframe class="player"
+                    src="https://www.youtube.com/embed/{{ selected_video.id }}"
+                    title="{{ selected_video.title }}"
+                    allowfullscreen>
+            </iframe>
+            <h2>{{ selected_video.title }}</h2>
+            <p class="meta">
+                {{ selected_video.channel }} ·
+                {{ selected_video.views }}
+            </p>
+            <p><a href="/">← Back to Home</a></p>
+        {% else %}
+            <div class="categories">
+                {% for c in ["All", "Technology", "Education",
+                             "Movies", "Nature"] %}
+                    <a class="{{ 'active' if category == c else '' }}"
+                       href="/?category={{ c }}">
+                        {{ c }}
+                    </a>
+                {% endfor %}
+            </div>
+
+            <div class="videos">
+                {% for video in videos %}
+                    <a class="video"
+                       href="/watch/{{ video.id }}">
+                        <img class="thumbnail"
+                             src="https://img.youtube.com/vi/{{ video.id }}/hqdefault.jpg"
+                             alt="{{ video.title }}">
+
+                        <h3>{{ video.title }}</h3>
+                        <div class="meta">{{ video.channel }}</div>
+                        <div class="meta">{{ video.views }}</div>
+                    </a>
+                {% else %}
+                    <p>No videos found. Try another search.</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </main>
+</div>
+</body>
+</html>
